@@ -1,11 +1,12 @@
 import os
 from flask import Flask
-from services.ping import routes
+from app.ping import ping_bp
 
 def init_blueprints(app):
     try:
         #ADD Routes here
-        app.register_blueprint(routes.ping_routes)
+        app.register_blueprint(ping_bp)
+        # app.register_blueprint(auth.routes.auth_routes)
         print('✅ Blueprints Initialized')
     except Exception as e:
         print(e)
