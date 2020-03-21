@@ -1,4 +1,5 @@
 import os
+import psycopg2
 from flask import Flask
 from app.ping import ping_bp
 from app.auth import auth_bp
@@ -15,9 +16,24 @@ def init_blueprints(app):
         print('❌ BLUEPRINTS FAILED TO INITIALIZE!')
         raise
 
+def init_db():
+    try:
+        conn = psycopg2.connect(user = "postgres", host = "localhost", port = "5432", database = "anonimus")
+        cursor = conn.cursor()
+        print("✅ Database Connected")
+
+    except (Exception, psycopg2.Error) as error :
+        print ("❌ Error while connecting to PostgreSQL", error)
+        raise
+    finally:
+        if(conn):
+            cursor.close()
+            conn.close()
+
 def create_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(config_class)
     init_blueprints(app)
+    init_db()
 
     return app
