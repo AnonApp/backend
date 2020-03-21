@@ -1,11 +1,17 @@
-from flask import request
+import json
+from flask import request, Response
 from app.auth import auth_bp
 
 @auth_bp.route("/api/register", methods=["POST"])
 def RegistrationController():
-    body = request.get_json()
+    req = request.get_json()
     res = {
-        "response": "Success!",
-        "message": body
+        "success": True,
+        "message": "We receive the input",
+        "email": req['email'],
+        "phone_number": req['phone_number']
     }
-    return res
+    return Response(json.dumps(res, sort_keys=False), mimetype='application/json')
+    
+
+
