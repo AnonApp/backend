@@ -6,9 +6,13 @@ class OTP():
     def __init__(self, phone_number):
         self.phone_number = phone_number
         self.account_id = "AC9c7d3165a03e51dd55bb0f34cc77aaae"
-        self.auth_token = "6b78e382cd366d14ada5908243c21f00"
-        self.service_code = "VA932bcc04550a6b6ae1aa243a38a93c4b"
+        self.auth_token = "5d2ab36375d66f1e575d186ca1d3c5f8"
+        self.service_code = "VAe7ca0f26de0745424a9ca6dcf42b8fa9"
         self.client = Client(self.account_id, self.auth_token)
+
+    def do_create_new_service(self):
+        service = self.client.verify.services.create(friendly_name='Anonimus', code_length=4)
+        self.service_code = service.sid
 
     def do_send_code(self):
         try:
@@ -26,7 +30,7 @@ class OTP():
                 cursor = conn.cursor()
                 verified_query = """
                     UPDATE users
-                    SET is_verified=true
+                    SET is_verified=true and updated_at=Now()
                     WHERE phone_number='{}'
                 """.format(self.phone_number)
                 cursor.execute(verified_query)
