@@ -25,16 +25,12 @@ class OTP():
     def do_verify(self, otp_code):
         try:
             verification_check = self.client.verify.services(self.service_code).verification_checks.create(to=self.phone_number, code=otp_code)
-            if verification_check.status == "approved":
+            if verification_check.valid:
                 conn = psycopg2.connect(user = "postgres", host = "localhost", port = "5432", database = "anonimus")
                 cursor = conn.cursor()
-                verified_query = """
-                    UPDATE users
-                    SET is_verified=true and updated_at=Now()
-                    WHERE phone_number='{}'
-                """.format(self.phone_number)
+                verified_query = """UPDATE users SET is_verified=true, updated_at=Now() WHERE phone_number='{}';""".format(self.phone_number)
                 cursor.execute(verified_query)
                 conn.commit()
         except Exception as err:
-            print("Error sending otp code: ", str(err))
+            print("Error when verifying otp code: ", str(err))
             return str(err)
