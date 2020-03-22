@@ -17,8 +17,8 @@ class Registration():
             conn = psycopg2.connect(user = "postgres", host = "localhost", port = "5432", database = "anonimus")
             cursor = conn.cursor()
             register_query = """
-                insert into users (user_id, phone_number, email, passhash, user_key) 
-                values ('{}', '{}', '{}', '{}', '{}')
+                INSERT INTO users (user_id, phone_number, email, passhash, user_key) 
+                VALUES ('{}', '{}', '{}', '{}', '{}')
             """.format(self.user_id, self.phone_number, self.email, (self.passhash).decode('utf-8'), self.user_key)
             cursor.execute(register_query)
             conn.commit()
@@ -31,4 +31,5 @@ class Registration():
     def normalized_phone_number(self, phone_number):
         if phone_number[0:2] == "08":
             return "+628"+phone_number[2:]
+        return phone_number
         

@@ -5,6 +5,7 @@ from app.auth import auth_bp
 from app.auth.registration import Registration
 from app.auth.otp import OTP
 from app.auth.login import Login
+from app.auth.logout import Logout
 
 @auth_bp.route("/api/register", methods=["POST"])
 def RegistrationController():
@@ -55,9 +56,20 @@ def LoginController():
         res["message"] = message
     else:
         res['user_key'] = message
-        
+
     return Response(json.dumps(res, sort_keys=False), mimetype='application/json')
 
+@auth_bp.route("/api/logout", methods=["POST"])
+def LogoutController():
+    req = request.get_json()
+    res = {
+        "success": True,
+        "message": "Logout succesfull, see you later!"
+    }
+
+    err, err_message = Logout(req['phone_number']).do_logout()
+    if err:
+        res["success"] = False
+        res["message"] = err_message
     
-
-
+    return Response(json.dumps(res, sort_keys=False), mimetype='application/json')

@@ -4,7 +4,7 @@ from twilio.rest import Client
 class OTP():
 
     def __init__(self, phone_number):
-        self.phone_number = phone_number
+        self.phone_number = self.normalized_phone_number(phone_number)
         self.account_id = "AC9c7d3165a03e51dd55bb0f34cc77aaae"
         self.auth_token = "5d2ab36375d66f1e575d186ca1d3c5f8" #this has been rotated
         self.service_code = "VAe7ca0f26de0745424a9ca6dcf42b8fa9" #rotate this again
@@ -34,3 +34,8 @@ class OTP():
         except Exception as err:
             print("Error when verifying otp code: ", str(err))
             return str(err)
+    
+    def normalized_phone_number(self, phone_number):
+        if phone_number[0:2] == "08":
+            return "+628"+phone_number[2:]
+        return phone_number
