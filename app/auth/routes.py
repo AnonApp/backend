@@ -4,6 +4,7 @@ from flask import request, Response
 from app.auth import auth_bp
 from app.auth.registration import Registration
 from app.auth.otp import OTP
+from app.auth.login import Login
 
 @auth_bp.route("/api/register", methods=["POST"])
 def RegistrationController():
@@ -39,6 +40,23 @@ def OTPController():
 
     return Response(json.dumps(res, sort_keys=False), mimetype='application/json')
 
+@auth_bp.route("/api/login", methods=["POST"])
+def LoginController():
+    req = request.get_json()
+    res = {
+        "success": True,
+        "message": "Login succesfull",
+        "user_key": "null"
+    }
+
+    err, message = Login(req['phone_number'], req['password']).do_login()
+    if err:
+        res["success"] = False
+        res["message"] = message
+    else:
+        res['user_key'] = message
+        
+    return Response(json.dumps(res, sort_keys=False), mimetype='application/json')
 
     
 
