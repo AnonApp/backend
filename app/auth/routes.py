@@ -59,6 +59,19 @@ def LoginController():
 
     return Response(json.dumps(res, sort_keys=False), mimetype='application/json')
 
+@auth_bp.route("/api/login/verify", methods=["POST"])
+def VerifyLoginController():
+    req = request.get_json()
+    res = {
+        "success": True,
+        "message": "You are logged in."
+    }
+
+    if Login().verify_login(req['user_key']) is False:
+        res['message'] = "I'm sorry, who are you?"
+
+    return Response(json.dumps(res, sort_keys=False), mimetype='application/json')
+
 @auth_bp.route("/api/logout", methods=["POST"])
 def LogoutController():
     req = request.get_json()
