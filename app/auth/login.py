@@ -1,6 +1,7 @@
 import bcrypt
 import psycopg2
 import secrets
+from app.models import db, Users
 
 class Login():
 
@@ -12,15 +13,12 @@ class Login():
 
     def do_login(self):
         try:
-            get_passhash_query = """SELECT passhash FROM users where phone_number='{}' """.format(self.phone_number)
-            self.db_cursor.execute(get_passhash_query)
-            passhash = self.db_cursor.fetchone()[0]
-            if bcrypt.checkpw((self.password).encode('utf-8'), (passhash).encode('utf-8')):
-                user_key = str(secrets.token_hex(16))
-                update_user_key_query = "UPDATE users SET user_key=%s, updated_at=Now() WHERE phone_number=%s;"
-                self.db_cursor.execute(update_user_key_query, (user_key, self.phone_number))
-                self.db_conn.commit()
-                return False, user_key
+            user = db.session.query(Users).filter_by(phone_number=self.phone_number).first()
+            if bcrypt.checkpw((self.password).encode('utf-8'), (user.passhash).encode('utf-8')):
+                token = str(secrets.token_hex(16))
+                db.session.query(Users).filter_by(phone_number=self.phone_number).update({"token": token})
+                db.session.commit()
+                return False, token
         except Exception as err:
             print("Error while logging in: ", str(err))
             return True, str(err)

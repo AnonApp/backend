@@ -1,6 +1,9 @@
-from app import db
 import datetime
+from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 
+db = SQLAlchemy()
+migrate = Migrate()
 class Users(db.Model):
     id = db.Column(db.String(64), primary_key=True)
     phone_number = db.Column(db.String(64), index=True, unique=True)

@@ -5,11 +5,7 @@ from app.ping import ping_bp
 from app.auth import auth_bp
 from app.feed import feed_bp
 from config import Config
-from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
-
-db = SQLAlchemy()
-migrate = Migrate()
+from app.models import db, migrate
 
 def init_blueprints(app):
     try:
