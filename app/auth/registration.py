@@ -19,7 +19,7 @@ class Registration():
             user = Users(id=self.user_id, phone_number=self.phone_number, email=self.email, passhash=(self.passhash), token=self.token)
             db.session.add(user)
             db.session.commit()
-            # OTP(self.phone_number).do_send_code()
+            OTP(self.phone_number).do_send_code()
             return None
         except Exception as err:
             return str(err)

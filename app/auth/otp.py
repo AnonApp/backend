@@ -1,5 +1,6 @@
-import psycopg2
+import datetime
 from twilio.rest import Client
+from app.models import db, Users
 
 class OTP():
 
@@ -7,7 +8,7 @@ class OTP():
         self.phone_number = self.normalized_phone_number(phone_number)
         self.account_id = "AC9c7d3165a03e51dd55bb0f34cc77aaae"
         self.auth_token = "5d2ab36375d66f1e575d186ca1d3c5f8" #this has been rotated
-        self.service_code = "VAe7ca0f26de0745424a9ca6dcf42b8fa9" #rotate this again
+        self.service_code = "VAb8dadcd442ea2b9e3f2034f5d86f8c7f" #rotate this again
         self.client = Client(self.account_id, self.auth_token)
 
     def do_create_new_service(self):
@@ -26,11 +27,8 @@ class OTP():
         try:
             verification_check = self.client.verify.services(self.service_code).verification_checks.create(to=self.phone_number, code=otp_code)
             if verification_check.valid:
-                conn = psycopg2.connect(user = "postgres", host = "localhost", port = "5432", database = "anonimus")
-                cursor = conn.cursor()
-                verified_query = """UPDATE users SET is_verified=true, updated_at=Now() WHERE phone_number='{}';""".format(self.phone_number)
-                cursor.execute(verified_query)
-                conn.commit()
+                db.session.query(Users).filter_by(phone_number=self.phone_number).update({"is_verified": True, "updated_at": datetime.datetime.utcnow()})
+                db.session.commit()
         except Exception as err:
             print("Error when verifying otp code: ", str(err))
             return str(err)

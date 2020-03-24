@@ -1,4 +1,5 @@
-import psycopg2
+import datetime
+from app.models import db, Users
 
 class Logout():
 
@@ -7,11 +8,8 @@ class Logout():
     
     def do_logout(self):
         try:
-            conn = psycopg2.connect(user = "postgres", host = "localhost", port = "5432", database = "anonimus")
-            cursor = conn.cursor()
-            update_user_key_query = """UPDATE users SET user_key='', updated_at=Now() WHERE phone_number='{}';""".format(self.phone_number)
-            cursor.execute(update_user_key_query)
-            conn.commit()
+            db.session.query(Users).filter_by(phone_number=self.phone_number).update({"token": '', "updated_at": datetime.datetime.utcnow()})
+            db.session.commit()
             return False, None
         except Exception as err:
             print("Error when logging out: ", str(err))

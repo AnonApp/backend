@@ -30,7 +30,6 @@ def PostController():
         res["redirect_to"]= "APP_URL",
         return Response(json.dumps(res, sort_keys=False), mimetype='application/json')
     
-    user = Login().get_user(req['user_key'])
     err, err_message = Feed(req['user_key']).submit_post(req['post_content'])
     if err:
         res['success'] = False
