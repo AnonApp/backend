@@ -21,7 +21,7 @@ class Posts(db.Model):
     id = db.Column(db.String(64), primary_key=True)
     user_id = db.Column(db.String(64), db.ForeignKey('users.id'))
     content = db.Column(db.String(255))
-    likes = db.Column(db.Integer)
+    likes = db.Column(db.Integer, default=0)
     posted_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
     def __repr__(self):
@@ -32,7 +32,7 @@ class Comments(db.Model):
     post_id = db.Column(db.String(64), db.ForeignKey('posts.id'))
     user_id = db.Column(db.String(64), db.ForeignKey('users.id'))
     content = db.Column(db.String(255))
-    likes = db.Column(db.Integer)
+    likes = db.Column(db.Integer, default=0)
     posted_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
     def __repr__(self):

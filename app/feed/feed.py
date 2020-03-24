@@ -1,27 +1,21 @@
 import psycopg2
 import json
 import uuid
+from app.models import db, Users, Posts
 
 class Feed():
 
-    def __init__(self, user_key):
+    def __init__(self, token):
         self.db_conn = psycopg2.connect(user = "postgres", host = "localhost", port = "5432", database = "anonimus")
         self.db_cursor = self.db_conn.cursor()
-        self.user_key = user_key
+        self.token = token
     
     def submit_post(self, post_content):
         try:
-            insert_post_query = """
-                    INSERT INTO posts (post_id, user_id, post_content) 
-                    VALUES (
-                        '{}',
-                        (SELECT user_id from users where user_key='{}'),
-                        '{}'
-                    )
-                """.format(str(uuid.uuid4().hex), self.user_key, post_content)
-            print(insert_post_query)
-            self.db_cursor.execute(insert_post_query)
-            self.db_conn.commit()
+            user = db.session.query(Users).filter_by(token=self.token).first()
+            post = Posts(id=str(uuid.uuid4().hex), user_id=user.id, content=post_content)
+            db.session.add(post)
+            db.session.commit()
             return False, "post has been submitted" 
         except Exception as err:
             print("Error when submitting new post: ", str(err))
