@@ -1,7 +1,7 @@
 import datetime
 import json
 import uuid
-from app.models import db, Users, Posts, Comments
+from app.models import db, Users, Posts, Comments, Likes
 
 class Feed():
 
@@ -66,6 +66,28 @@ class Feed():
             print("Error when submitting new comment: ", str(err))
             return False, str(err)
     
+    def submit_like(self, post_id=None, comment_id=None):
+        try:
+            user = db.session.query(Users).filter_by(token=self.token).first()
+            like = Likes(id=str(uuid.uuid4().hex), post_id=post_id, comment_id=None, user_id=user.id)
+            db.session.add(like)
+            db.session.commit()
+            return False, "the content is successfully liked."
+        except Exception as err:
+            print("Error when liking: ", str(err))
+            return False, str(err)
+    
+    def submit_unlike(self, post_id=None, comment_id=None):
+        try:
+            user = db.session.query(Users).filter_by(token=self.token).first()
+            like = Likes(id=str(uuid.uuid4().hex), post_id=post_id, comment_id=None, user_id=user.id)
+            db.session.query(Likes).filter_by(post_id=like.post_id, comment_id=like.comment_id, user_id=user.id).delete()
+            db.session.commit()
+            return False, "the content is successfully unliked."
+        except Exception as err:
+            print("Error when unliking: ", str(err))
+            return False, str(err)
+
     def get_feed(self):
         posts = db.session.query(Posts).all()
         feed = []
