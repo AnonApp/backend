@@ -27,7 +27,7 @@ class Login():
     
     def verify_login(self, user_key):
         try:
-            count_key_query = "select count(user_key) from users where user_key='{}';".format(user_key)
+            count_key_query = "select count(*) from users where user_key='{}';".format(user_key)
             self.db_cursor.execute(count_key_query)
             if int(self.db_cursor.fetchone()[0]) is 0:
                 return False
@@ -35,6 +35,16 @@ class Login():
         except Exception as err:
             print("Error when verifying login: ", str(err))
             return False
+
+    def get_user(self, user_key):
+        try:
+            count_key_query = "select user_id, phone_number, email from users where user_key='{}';".format(user_key)
+            self.db_cursor.execute(count_key_query)
+            query_result = self.db_cursor.fetchone()
+            return True, query_result
+        except Exception as err:
+            print("Error when verifying login: ", str(err))
+            return False, str(err)
 
     def normalized_phone_number(self, phone_number):
         if phone_number[0:2] == "08":
