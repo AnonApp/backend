@@ -1,7 +1,7 @@
 import datetime
 import json
 import uuid
-from app.models import db, Users, Posts
+from app.models import db, Users, Posts, Comments
 
 class Feed():
 
@@ -9,7 +9,7 @@ class Feed():
         self.token = token
 
     def pretty_date(self, time=False):
-        now = datetime.datetime.now()
+        now = datetime.datetime.utcnow()
         if type(time) is int:
             diff = now - datetime.datetime.fromtimestamp(time)
         elif isinstance(time,datetime.datetime):
@@ -54,6 +54,18 @@ class Feed():
             print("Error when submitting new post: ", str(err))
             return False, str(err)
     
+    def submit_comment(self, post_id, comment_content):
+        try:
+            user = db.session.query(Users).filter_by(token=self.token).first()
+            post = db.session.query(Posts).filter_by(id=post_id).first()
+            comment = Comments(id=str(uuid.uuid4().hex), post_id=post.id, user_id=user.id, content=comment_content)
+            db.session.add(comment)
+            db.session.commit()
+            return False, "comment has been submitted" 
+        except Exception as err:
+            print("Error when submitting new comment: ", str(err))
+            return False, str(err)
+    
     def get_feed(self):
         posts = db.session.query(Posts).all()
         feed = []
@@ -62,6 +74,20 @@ class Feed():
                 "post_id": post.id,
                 "user_id": post.user_id,
                 "post_content": post.content,
+                "likes": post.likes,
+                "posted_at": self.pretty_date(post.posted_at)
+            })
+        return feed
+    
+    def get_comment(self, post_id):
+        comments = db.session.query(Comments).filter(post_id=post_id).all()
+        feed = []
+        for comment in comments:
+            feed.append({
+                "comment_id": comment.id,
+                "post_id": comment.post_id,
+                "user_id": comment.user_id,
+                "comment_content": comment.content,
                 "likes": post.likes,
                 "posted_at": self.pretty_date(post.posted_at)
             })
