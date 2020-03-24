@@ -2,7 +2,7 @@ from app import db
 import datetime
 
 class Users(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.String(64), primary_key=True)
     phone_number = db.Column(db.String(64), index=True, unique=True)
     email = db.Column(db.String(120), index=True, unique=True)
     passhash = db.Column(db.String(128))
@@ -15,8 +15,8 @@ class Users(db.Model):
         return '<User {}>'.format(self.phone_number)   
 
 class Posts(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    id = db.Column(db.String(64), primary_key=True)
+    user_id = db.Column(db.String(64), db.ForeignKey('users.id'))
     content = db.Column(db.String(255))
     likes = db.Column(db.Integer)
     posted_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
@@ -25,9 +25,9 @@ class Posts(db.Model):
         return '<Post {}>'.format(self.id)   
 
 class Comments(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    post_id = db.Column(db.Integer, db.ForeignKey('posts.id'))
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    id = db.Column(db.String(64), primary_key=True)
+    post_id = db.Column(db.String(64), db.ForeignKey('posts.id'))
+    user_id = db.Column(db.String(64), db.ForeignKey('users.id'))
     content = db.Column(db.String(255))
     likes = db.Column(db.Integer)
     posted_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
@@ -36,10 +36,10 @@ class Comments(db.Model):
         return '<Comment {}>'.format(self.id)  
 
 class Likes(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    post_id = db.Column(db.Integer, db.ForeignKey('posts.id'), nullable=True)
-    comment_id = db.Column(db.Integer, db.ForeignKey('comments.id'), nullable=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    id = db.Column(db.String(64), primary_key=True)
+    post_id = db.Column(db.String(64), db.ForeignKey('posts.id'), nullable=True)
+    comment_id = db.Column(db.String(64), db.ForeignKey('comments.id'), nullable=True)
+    user_id = db.Column(db.String(64), db.ForeignKey('users.id'))
     posted_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
     def __repr__(self):
