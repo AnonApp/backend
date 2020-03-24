@@ -25,7 +25,7 @@ class Posts(db.Model):
     posted_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
     def __repr__(self):
-        return '<Post {}>'.format(self.id)   
+        return '<Post {}>'.format(self.id)
 
 class Comments(db.Model):
     id = db.Column(db.String(64), primary_key=True)
