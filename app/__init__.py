@@ -5,6 +5,11 @@ from app.ping import ping_bp
 from app.auth import auth_bp
 from app.feed import feed_bp
 from config import Config
+from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
+
+db = SQLAlchemy()
+migrate = Migrate()
 
 def init_blueprints(app):
     try:
@@ -18,24 +23,13 @@ def init_blueprints(app):
         print('❌ BLUEPRINTS FAILED TO INITIALIZE!')
         raise
 
-def init_db():
-    try:
-        conn = psycopg2.connect(user = "postgres", host = "localhost", port = "5432", database = "anonimus")
-        cursor = conn.cursor()
-        print("✅ Database Connected")
-
-    except (Exception, psycopg2.Error) as error :
-        print ("❌ Error while connecting to PostgreSQL", error)
-        raise
-    finally:
-        if(conn):
-            cursor.close()
-            conn.close()
-
 def create_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(config_class)
     init_blueprints(app)
-    init_db()
+    db.init_app(app)
+    migrate.init_app(app, db)
 
     return app
+
+from app import models
