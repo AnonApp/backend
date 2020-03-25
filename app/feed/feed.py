@@ -88,29 +88,64 @@ class Feed():
             print("Error when unliking: ", str(err))
             return False, str(err)
 
-    def get_feed(self):
-        posts = db.session.query(Posts).all()
-        feed = []
+    def get_posts(self):
+        feed_query = """
+        SELECT 
+            users.id as user_id,
+            posts.id as post_id,
+            posts.content,
+            exists(select 1 from likes where likes.post_id = posts.id and likes.user_id = users.id limit 1) as liked,
+            (select count(distinct likes.user_id) from likes where likes.post_id = posts.id) as likes,
+            (select count(distinct comments.id) from comments where comments.post_id = posts.id) as comments,
+            posts.posted_at
+        FROM
+            users,
+            posts
+        WHERE
+            users.token = '{}';
+        """.format(self.token)
+        posts = db.engine.execute(feed_query)
+        posts_json = []
         for post in posts:
-            feed.append({
-                "post_id": post.id,
-                "user_id": post.user_id,
-                "post_content": post.content,
-                "likes": post.likes,
-                "posted_at": self.pretty_date(post.posted_at)
+            posts_json.append({
+                "user_id": post[0],
+                "post_id": post[1],
+                "post_content": post[2],
+                "liked": post[3],
+                "likes": post[4],
+                "comments": post[5],
+                "posted_at": self.pretty_date(post[6])
             })
-        return feed
+        return posts_json
     
-    def get_comment(self, post_id):
-        comments = db.session.query(Comments).filter(post_id=post_id).all()
-        feed = []
+    def get_comments(self, post_id):
+        comments_query = """
+        SELECT 
+            users.id as user_id,
+            posts.id as post_id,
+            comments.id as comment_id,
+            comments.content,
+            exists(select 1 from likes where likes.comment_id = comments.id and likes.user_id = users.id limit 1) as liked,
+            (select count(distinct likes.user_id) from likes where likes.comment_id = comments.id) as likes,
+            posts.posted_at
+        FROM
+            users,
+            posts,
+            comments
+        WHERE
+            users.token = '{}' and 
+            posts.id = '{}';
+        """.format(self.token, post_id)
+        comments = db.engine.execute(comments_query)
+        comments_json = []
         for comment in comments:
-            feed.append({
-                "comment_id": comment.id,
-                "post_id": comment.post_id,
-                "user_id": comment.user_id,
-                "comment_content": comment.content,
-                "likes": post.likes,
-                "posted_at": self.pretty_date(post.posted_at)
+            comments_json.append({
+                "user_id": comment[0],
+                "post_id": comment[1],
+                "comment_id": comment[2],
+                "comment_content": comment[3],
+                "liked": comment[4],
+                "likes": comment[5],
+                "posted_at": self.pretty_date(comment[6])
             })
-        return feed
+        return comments_json

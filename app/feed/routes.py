@@ -5,7 +5,7 @@ from app.feed import feed_bp
 from app.auth.login import Login
 from app.feed.feed import Feed
 
-@feed_bp.route("/api/feed/getpost", methods=["POST"])
+@feed_bp.route("/api/feed/getposts", methods=["POST"])
 def GetPostController():
     req = request.get_json()
     res = {
@@ -16,7 +16,7 @@ def GetPostController():
         res["redirect_to"]= "APP_URL",
         return Response(json.dumps(res, sort_keys=False), mimetype='application/json')
     
-    res["feed"] = Feed(req['token']).get_feed()
+    res["feed"] = Feed(req['token']).get_posts()
     return Response(json.dumps(res, sort_keys=False), mimetype='application/json')
 
 @feed_bp.route("/api/feed/submitpost", methods=["POST"])
@@ -38,7 +38,7 @@ def SubmitPostController():
     res['message'] = err_message
     return Response(json.dumps(res, sort_keys=False), mimetype='application/json')
 
-@feed_bp.route("/api/feed/getcomment", methods=["POST"])
+@feed_bp.route("/api/feed/getcomments", methods=["POST"])
 def GetCommentController():
     req = request.get_json()
     res = {
@@ -49,7 +49,7 @@ def GetCommentController():
         res["redirect_to"]= "APP_URL",
         return Response(json.dumps(res, sort_keys=False), mimetype='application/json')
     
-    res["comments"] = Feed(req['token']).get_comment(req['post_id'])
+    res["comments"] = Feed(req['token']).get_comments(req['post_id'])
     return Response(json.dumps(res, sort_keys=False), mimetype='application/json')
 
 @feed_bp.route("/api/feed/submitcomment", methods=["POST"])
