@@ -69,7 +69,7 @@ class Feed():
     def submit_like(self, post_id=None, comment_id=None):
         try:
             user = db.session.query(Users).filter_by(token=self.token).first()
-            like = Likes(id=str(uuid.uuid4().hex), post_id=post_id, comment_id=None, user_id=user.id)
+            like = Likes(id=str(uuid.uuid4().hex), post_id=post_id, comment_id=comment_id, user_id=user.id)
             db.session.add(like)
             db.session.commit()
             return False, "the content is successfully liked."
@@ -121,20 +121,21 @@ class Feed():
     def get_comments(self, post_id):
         comments_query = """
         SELECT 
-            users.id as user_id,
-            posts.id as post_id,
-            comments.id as comment_id,
+            comments.user_id,
+            posts.id as post_id, 
+            comments.id as comment_id, 
             comments.content,
             exists(select 1 from likes where likes.comment_id = comments.id and likes.user_id = users.id limit 1) as liked,
-            (select count(distinct likes.user_id) from likes where likes.comment_id = comments.id) as likes,
-            posts.posted_at
-        FROM
+            (select count(likes.comment_id) from likes where likes.comment_id = comments.id) as likes,
+            comments.posted_at
+        FROM 
             users,
-            posts,
             comments
+        JOIN 
+            posts on posts.id=comments.post_id
         WHERE
-            users.token = '{}' and 
-            posts.id = '{}';
+            users.token = '{}' and
+            comments.post_id = '{}';
         """.format(self.token, post_id)
         comments = db.engine.execute(comments_query)
         comments_json = []
