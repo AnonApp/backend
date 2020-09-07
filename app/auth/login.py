@@ -1,3 +1,4 @@
+import os
 import bcrypt
 import psycopg2
 import secrets
@@ -7,7 +8,7 @@ class Login():
     def __init__(self, phone_number='', password=''):
         self.phone_number = self.normalized_phone_number(phone_number)
         self.password = password
-        self.db_conn = psycopg2.connect(user = "postgres", host = "localhost", port = "5432", database = "anonimus")
+        self.db_conn = psycopg2.connect(os.environ['DATABASE_URL'])
         self.db_cursor = self.db_conn.cursor()
 
     def do_login(self):

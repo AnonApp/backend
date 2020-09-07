@@ -1,3 +1,4 @@
+import os
 import psycopg2
 from twilio.rest import Client
 
@@ -26,7 +27,7 @@ class OTP():
         try:
             verification_check = self.client.verify.services(self.service_code).verification_checks.create(to=self.phone_number, code=otp_code)
             if verification_check.valid:
-                conn = psycopg2.connect(user = "postgres", host = "localhost", port = "5432", database = "anonimus")
+                conn = psycopg2.connect(os.environ['DATABASE_URL'])
                 cursor = conn.cursor()
                 verified_query = """UPDATE users SET is_verified=true, updated_at=Now() WHERE phone_number='{}';""".format(self.phone_number)
                 cursor.execute(verified_query)

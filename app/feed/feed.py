@@ -1,11 +1,12 @@
 import psycopg2
 import json
 import uuid
+import os
 
 class Feed():
 
     def __init__(self, user_key):
-        self.db_conn = psycopg2.connect(user = "postgres", host = "localhost", port = "5432", database = "anonimus")
+        self.db_conn = psycopg2.connect(os.environ['DATABASE_URL'])
         self.db_cursor = self.db_conn.cursor()
         self.user_key = user_key
     

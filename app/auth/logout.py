@@ -1,3 +1,4 @@
+import os
 import psycopg2
 
 class Logout():
@@ -7,7 +8,7 @@ class Logout():
     
     def do_logout(self):
         try:
-            conn = psycopg2.connect(user = "postgres", host = "localhost", port = "5432", database = "anonimus")
+            conn = psycopg2.connect(os.environ['DATABASE_URL'])
             cursor = conn.cursor()
             update_user_key_query = """UPDATE users SET user_key='', updated_at=Now() WHERE phone_number='{}';""".format(self.phone_number)
             cursor.execute(update_user_key_query)

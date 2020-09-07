@@ -1,5 +1,6 @@
 import bcrypt, uuid, secrets
 import psycopg2
+import os
 # from twilio.rest import Client
 # from app.auth.otp import OTP
 
@@ -14,7 +15,7 @@ class Registration():
     
     def do_registration(self):
         try:
-            conn = psycopg2.connect(user = "postgres", host = "localhost", port = "5432", database = "anonimus")
+            conn = psycopg2.connect(os.environ['DATABASE_URL'])
             cursor = conn.cursor()
             register_query = """
                 INSERT INTO users (user_id, phone_number, email, passhash, user_key) 
