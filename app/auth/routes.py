@@ -47,7 +47,7 @@ def LoginController():
     res = {
         "success": True,
         "message": "Login succesfull",
-        "user_key": "null"
+        "user_key": None
     }
 
     err, message = Login(req['phone_number'], req['password']).do_login()

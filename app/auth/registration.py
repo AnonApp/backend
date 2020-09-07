@@ -1,7 +1,7 @@
 import bcrypt, uuid, secrets
 import psycopg2
-from twilio.rest import Client
-from app.auth.otp import OTP
+# from twilio.rest import Client
+# from app.auth.otp import OTP
 
 class Registration():
 
@@ -22,7 +22,7 @@ class Registration():
             """.format(self.user_id, self.phone_number, self.email, (self.passhash).decode('utf-8'), self.user_key)
             cursor.execute(register_query)
             conn.commit()
-            OTP(self.phone_number).do_send_code() #raise exception
+            # OTP(self.phone_number).do_send_code() #raise exception
             return None
         except Exception as err:
             print("Error while creating PostgreSQL table: ", str(err))
